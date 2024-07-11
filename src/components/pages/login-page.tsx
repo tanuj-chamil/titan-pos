@@ -10,11 +10,19 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
+import { useToast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
+
+interface Token {
+  status: number;
+  session: string;
+}
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [username, setUserame] = useState("");
   const [password, setPassword] = useState("");
+  const { toast } = useToast();
 
   const usernameInput = useRef<HTMLInputElement>(null);
 
@@ -27,7 +35,7 @@ function LoginPage() {
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    const token = await new Promise<string>((resolve, reject) =>
+    const token = await new Promise<Token>((resolve, reject) =>
       setTimeout(
         () =>
           resolve(
@@ -41,8 +49,14 @@ function LoginPage() {
     );
 
     setLoading(false);
-    if (usernameInput.current) {
-      usernameInput.current.value = token;
+
+    if (token.status == 401) {
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: "The username or password was incorrect.",
+        duration: 5000,
+      });
     }
   }
   return (

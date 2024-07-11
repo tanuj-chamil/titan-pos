@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, session } from "electron";
 // import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -71,4 +71,4 @@ app.on("activate", () => {
 
 app.whenReady().then(createWindow);
 
-ipcMain.handle('login-request', (event, args) => {console.log(args); return 'login-fail'})
+ipcMain.handle('login-request', (event, args) => {console.log(args); return {status : 401 , session:""}})
