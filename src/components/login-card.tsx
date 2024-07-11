@@ -13,6 +13,9 @@ import { useEffect, useRef, useState } from "react";
 
 function LoginCard() {
   const [loading, setLoading] = useState(false);
+  const [username, setUserame] = useState("");
+  const [password, setPassword] = useState("");
+
   const usernameInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -21,12 +24,26 @@ function LoginCard() {
     }
   }, []);
 
-  function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2500);
+    const token = await new Promise<string>((resolve, reject) =>
+      setTimeout(
+        () =>
+          resolve(
+            window.ipcRenderer.invoke("login-request", {
+              username: username,
+              password: password,
+            })
+          ),
+        1250
+      )
+    );
+
+    setLoading(false);
+    if (usernameInput.current) {
+      usernameInput.current.value = token;
+    }
   }
   return (
     <Card className="min-w-80 shadow-md">
@@ -61,6 +78,7 @@ function LoginCard() {
               placeholder="Username"
               type="text"
               ref={usernameInput}
+              onChange={(e) => setUserame(e.target.value)}
             />
           </div>
           <div>
@@ -80,10 +98,16 @@ function LoginCard() {
                 name="password"
                 placeholder="Password"
                 type="password"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
-          <Button tabIndex={2} type="submit" className="mt-6">
+          <Button
+            tabIndex={2}
+            type="submit"
+            className="mt-6"
+            disabled={loading}
+          >
             Login
           </Button>
         </form>
