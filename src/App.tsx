@@ -1,11 +1,16 @@
+import { HashRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import LoginCard from "./components/login-card";
+import LoginPage from "./components/pages/login-page";
+import SplashScreen from "./components/pages/splash-screen";
 
 function App() {
   return (
-    <div className="flex flex-col min-h-dvh justify-center items-center">
-      <LoginCard></LoginCard>
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<SplashScreen />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+    </HashRouter>
   );
 }
 
