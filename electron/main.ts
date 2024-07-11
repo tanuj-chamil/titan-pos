@@ -2,9 +2,13 @@ import { app, BrowserWindow, ipcMain, session } from "electron";
 // import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import fs from "node:fs";
+import { Database } from "sqlite3";
+import { getSqlite3 } from "./sqlite3";
 
 // const require = createRequire(import.meta.url);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const __filename = fileURLToPath(import.meta.url);
 
 // The built directory structure
 //
@@ -69,6 +73,13 @@ app.on("activate", () => {
   }
 });
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
 
-ipcMain.handle('login-request', (event, args) => {console.log(args); return {status : 401 , session:""}})
+  ipcMain.handle("login-request", (event, args) => {
+    console.log(args);
+    return { status: 401, session: "" };
+  });
+
+  const db = getSqlite3().then((database) => {});
+});
