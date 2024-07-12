@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
+import { log } from "node:console";
 
 interface Token {
   status: number;
@@ -34,30 +35,55 @@ function LoginPage() {
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    const token = await new Promise<Token>((resolve, reject) =>
-      setTimeout(
-        () =>
-          resolve(
-            window.ipcRenderer.invoke("login-request", {
-              username: username,
-              password: password,
-            })
-          ),
-        1250
-      )
-    );
 
-    setLoading(false);
-
-    if (token.status == 401) {
+    if (username == "" || password == "") {
       toast({
         variant: "destructive",
-        title: "Login Failed",
-        description: "The username or password was incorrect.",
+        title: "Login Failed!",
+        description: "Username and password cannot be empty.",
         duration: 5000,
       });
+    } else {
+      setLoading(true);
+      const token = await new Promise<Token>((resolve, reject) =>
+        setTimeout(
+          () =>
+            resolve(
+              window.ipcRenderer.invoke("login-request", {
+                username: username,
+                password: password,
+              })
+            ),
+          1250
+        )
+      );
+
+      if (token.status == 401) {
+        toast({
+          variant: "destructive",
+          title: "Login Failed!",
+          description: "The username or password was incorrect.",
+          duration: 5000,
+        });
+      } else if (token.status == 200) {
+        toast({
+          variant: "success",
+          title: "Login Success!",
+          description: `Welcome ${username}`,
+          duration: 5000,
+        });
+      } else if (token.status == 404) {
+        toast({
+          variant: "destructive",
+          title: "Login Failed!",
+          description: `User not found.`,
+          duration: 5000,
+        });
+      }
+      console.log(token);
     }
+
+    setLoading(false);
   }
   return (
     <div className="flex flex-col min-h-dvh justify-center items-center">

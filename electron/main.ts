@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, session } from "electron";
 // import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import fs from "node:fs";
+import { hash, compare } from "bcryptjs";
 import { Database } from "sqlite3";
 import { getSqlite3 } from "./sqlite3";
 
@@ -34,7 +34,7 @@ let win: BrowserWindow | null;
 
 function createWindow() {
   win = new BrowserWindow({
-    minHeight: 600,
+    minHeight: 800,
     minWidth: 800,
     icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
@@ -76,10 +76,50 @@ app.on("activate", () => {
 app.whenReady().then(() => {
   createWindow();
 
-  ipcMain.handle("login-request", (event, args) => {
-    console.log(args);
-    return { status: 401, session: "" };
-  });
+  let db: Database;
+  getSqlite3()
+    .then((database) => {
+      db = database;
+      const sql = `CREATE TABLE IF NOT EXISTS users (username TEXT  NOT NULL PRIMARY KEY, passhash TEXT)`;
+      db.run(sql);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
-  const db = getSqlite3().then((database) => {});
+  ipcMain.handle("login-request", async (event, args: User) => {
+    const sql = `SELECT passhash FROM users WHERE username ='${args.username}'`;
+    const password = args.password;
+    const username = args.username;
+    let token: Token = { status: 400, session: "test" };
+
+    console.log(sql);
+
+    try {
+      const users = await new Promise<DBUser[]>((resolve, reject) => {
+        db.all(sql, (err, rows: DBUser[]) => {
+          if (err) reject(err);
+          else resolve(rows);
+        });
+      });
+
+      if (users.length == 0) {
+        token = { status: 404, session: "test" };
+      } else {
+        const dbuser = users[0];
+        const isMatch = await new Promise<boolean>((resolve, reject) => {
+          compare(password, dbuser.passhash, (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          });
+        });
+
+        token = { status: isMatch ? 200 : 401, session: "test" };
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    return token;
+  });
 });
