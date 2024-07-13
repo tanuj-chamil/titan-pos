@@ -11,19 +11,15 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
-import { ToastAction } from "../ui/toast";
-import { log } from "node:console";
-
-interface Token {
-  status: number;
-  session: string;
-}
+import { useAtom } from "jotai";
+import sessionIDatom from "@/atoms";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [username, setUserame] = useState("");
   const [password, setPassword] = useState("");
   const { toast } = useToast();
+  const [sessionID, setSessionID] = useAtom(sessionIDatom);
 
   const usernameInput = useRef<HTMLInputElement>(null);
 
@@ -31,6 +27,7 @@ function LoginPage() {
     if (usernameInput.current) {
       usernameInput.current.focus();
     }
+    console.log(sessionID);
   }, []);
 
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
@@ -58,6 +55,8 @@ function LoginPage() {
         )
       );
 
+      setSessionID(token.session);
+
       if (token.status == 401) {
         toast({
           variant: "destructive",
@@ -80,9 +79,8 @@ function LoginPage() {
           duration: 5000,
         });
       }
-      console.log(token);
     }
-
+    console.log(sessionID);
     setLoading(false);
   }
   return (
@@ -122,26 +120,24 @@ function LoginPage() {
                 onChange={(e) => setUserame(e.target.value)}
               />
             </div>
+            <div className="flex justify-between mt-2">
+              <div className="flex gap-2">
+                <KeyRound size={14} />
+                <Label htmlFor="password">Password</Label>
+              </div>
+              <a tabIndex={4} className="text-xs" href="/">
+                Forgot Password?
+              </a>
+            </div>
             <div>
-              <div className="flex justify-between mt-2">
-                <div className="flex gap-2">
-                  <KeyRound size={14} />
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <a tabIndex={4} className="text-xs" href="/">
-                  Forgot Password?
-                </a>
-              </div>
-              <div>
-                <Input
-                  tabIndex={2}
-                  className="my-2"
-                  name="password"
-                  placeholder="Password"
-                  type="password"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
+              <Input
+                tabIndex={2}
+                className="my-2"
+                name="password"
+                placeholder="Password"
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <Button
               tabIndex={2}

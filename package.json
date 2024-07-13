@@ -19,6 +19,7 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "jotai": "^2.9.0",
     "ldrs": "^1.0.2",
     "lucide-react": "^0.400.0",
     "next-themes": "^0.3.0",
