@@ -23,16 +23,20 @@
     "ldrs": "^1.0.2",
     "lucide-react": "^0.400.0",
     "next-themes": "^0.3.0",
+    "pg-hstore": "^2.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.24.1",
     "react-svg": "^16.1.34",
+    "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.6.0",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@types/node": "^20.14.9",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
@@ -52,6 +56,14 @@
     "vite-plugin-electron": "^0.28.6",
     "vite-plugin-electron-renderer": "^0.14.5",
     "vite-plugin-native": "^2.2.1"
+  },
+  "build": {
+    "extraResources": [
+      {
+        "from": "node_modules/sqlite3/lib/binding/napi-v6-win32-x64",
+        "to": "sqlite3"
+      }
+    ]
   },
   "main": "dist-electron/main.js"
 }

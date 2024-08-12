@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "../ui/use-toast";
 import { useAtom } from "jotai";
 import sessionIDatom from "@/atoms";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const { toast } = useToast();
   const [sessionID, setSessionID] = useAtom(sessionIDatom);
-
+  const navigate = useNavigate();
   const usernameInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -71,6 +72,7 @@ function LoginPage() {
           description: `Welcome ${username}`,
           duration: 5000,
         });
+        navigate("/");
       } else if (token.status == 404) {
         toast({
           variant: "destructive",

@@ -9,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<SplashScreen />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashsboard" element={<h1>Dashboard</h1>} />
       </Routes>
     </HashRouter>
   );
