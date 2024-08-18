@@ -15,6 +15,7 @@ let win: BrowserWindow | null;
 
 function createWindow() {
   win = new BrowserWindow({
+
     minHeight: 800,
     minWidth: 800,
     icon: path.join(process.env.APP_ROOT, "public", "electron-vite.svg"),
@@ -22,6 +23,8 @@ function createWindow() {
       preload: path.join(__dirname, "preload.mjs"),
     },
   });
+
+  win.menuBarVisible = false;
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL);

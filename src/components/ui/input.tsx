@@ -1,13 +1,17 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import ShortcutKey from "./shortcutkey"
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+    shortcut : string
+  }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
+      <div className="relative">
       <input
         type={type}
         className={cn(
@@ -16,7 +20,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         ref={ref}
         {...props}
-      />
+        />
+        <div className="absolute inset-y-0 end-0 flex items-center mx-1">
+          <ShortcutKey text="" shortcut={props.shortcut} />
+        </div>
+        </div>
     )
   }
 )

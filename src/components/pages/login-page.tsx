@@ -10,10 +10,12 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useToast } from "../ui/use-toast";
 import { useAtom } from "jotai";
 import sessionIDatom from "@/atoms";
 import { useNavigate } from "react-router-dom";
+import ShortcutKey from "../ui/shortcutkey";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -22,11 +24,55 @@ function LoginPage() {
   const { toast } = useToast();
   const [sessionID, setSessionID] = useAtom(sessionIDatom);
   const navigate = useNavigate();
-  const usernameInput = useRef<HTMLInputElement>(null);
+  const usernameInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const loginButtonRef = useRef<HTMLButtonElement>(null);
+
+  useHotkeys(
+    "alt+u",
+    () => {
+      if (usernameInputRef.current) {
+        usernameInputRef.current.focus();
+      }
+    },
+    {
+      enableOnFormTags: ["input", "select", "textarea"],
+      enableOnContentEditable: true,
+      preventDefault: true,
+    }
+  );
+
+  useHotkeys(
+    "alt+p",
+    () => {
+      if (passwordInputRef.current) {
+        passwordInputRef.current.focus();
+      }
+    },
+    {
+      enableOnFormTags: ["input", "select", "textarea"],
+      enableOnContentEditable: true,
+      preventDefault: true,
+    }
+  );
+
+  useHotkeys(
+    "alt+L",
+    () => {
+      if(loginButtonRef.current){
+        loginButtonRef.current.click()
+      }
+    },
+    {
+      enableOnFormTags: ["input", "select", "textarea"],
+      enableOnContentEditable: true,
+      preventDefault: true,
+    }
+  );
 
   useEffect(() => {
-    if (usernameInput.current) {
-      usernameInput.current.focus();
+    if (usernameInputRef.current) {
+      usernameInputRef.current.focus();
     }
     console.log(sessionID);
   }, []);
@@ -118,8 +164,9 @@ function LoginPage() {
                 name="username"
                 placeholder="Username"
                 type="text"
-                ref={usernameInput}
+                ref={usernameInputRef}
                 onChange={(e) => setUserame(e.target.value)}
+                shortcut="⌥ U"
               />
             </div>
             <div className="flex justify-between mt-2">
@@ -138,7 +185,9 @@ function LoginPage() {
                 name="password"
                 placeholder="Password"
                 type="password"
+                ref={passwordInputRef}
                 onChange={(e) => setPassword(e.target.value)}
+                shortcut="⌥ P"
               />
             </div>
             <Button
@@ -146,8 +195,9 @@ function LoginPage() {
               type="submit"
               className="mt-6"
               disabled={loading}
+              ref={loginButtonRef}
             >
-              Login
+              <ShortcutKey text="Login" shortcut="⌥ L"></ShortcutKey>
             </Button>
           </form>
         </CardContent>
