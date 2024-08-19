@@ -14,6 +14,12 @@ function SplashScreen() {
     }, 2500);
   }, []);
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     navigate("/posmenu");
+  //   }, 0);
+  // }, []);
+
   return (
     <div className="flex flex-col min-h-dvh justify-center items-center gap-4">
       <Orbit size={64}></Orbit>
@@ -24,7 +30,7 @@ function SplashScreen() {
           stroke="5"
           bg-opacity="0.1"
           speed="1.25"
-          color="#222222"
+          color="hsl(var(--foreground))"
         ></l-zoomies>
       </div>
       <p>Developed by Snap86</p>

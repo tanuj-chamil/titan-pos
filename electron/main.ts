@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { hash, compare } from "bcryptjs";
@@ -14,16 +14,20 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
 let win: BrowserWindow | null;
 
 function createWindow() {
+  let factor = screen.getPrimaryDisplay().scaleFactor;
   win = new BrowserWindow({
-
-    minHeight: 800,
-    minWidth: 800,
+    minHeight: 800/factor,
+    minWidth: 800/factor,
+    center: true,
     icon: path.join(process.env.APP_ROOT, "public", "electron-vite.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.mjs"),
+      devTools: !app.isPackaged,
+      zoomFactor: 1.0 / factor,
     },
   });
 
+  win.maximize();
   win.menuBarVisible = false;
 
   if (VITE_DEV_SERVER_URL) {
@@ -95,3 +99,17 @@ app.whenReady().then(async () => {
     return token;
   });
 });
+
+app.on('browser-window-focus', () => {
+  const chromiumShortcuts  = [
+    'CommandOrControl+R', // Reload
+    'CommandOrControl+Shift+R', // Hard Reload
+    'CommandOrControl+Shift+I', // Toggle DevTools
+    'F11',
+    'F5'
+  ];
+
+  globalShortcut.registerAll(chromiumShortcuts, () => {
+    console.log(`Chromium Shortcut Blocked`);
+  });
+})

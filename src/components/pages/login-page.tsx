@@ -16,6 +16,9 @@ import { useAtom } from "jotai";
 import sessionIDatom from "@/atoms";
 import { useNavigate } from "react-router-dom";
 import ShortcutKey from "../ui/shortcutkey";
+import { ModeToggle } from "../ui/mode-toggle";
+import { Separator } from "../ui/separator";
+import { useTheme } from "../ui/theme-provider";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -27,6 +30,7 @@ function LoginPage() {
   const usernameInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const loginButtonRef = useRef<HTMLButtonElement>(null);
+  const {theme, setTheme} = useTheme();
 
   useHotkeys(
     "alt+u",
@@ -59,9 +63,35 @@ function LoginPage() {
   useHotkeys(
     "alt+L",
     () => {
-      if(loginButtonRef.current){
-        loginButtonRef.current.click()
+      if (loginButtonRef.current) {
+        loginButtonRef.current.click();
       }
+    },
+    {
+      enableOnFormTags: ["input", "select", "textarea"],
+      enableOnContentEditable: true,
+      preventDefault: true,
+    }
+  );
+
+  useHotkeys(
+    "alt+T",
+    () => {
+      let newtheme = theme;
+      if (theme == "light") {
+        newtheme = "dark";
+      } else if (theme == "dark") {
+        newtheme = "system"
+      } else {
+        newtheme = "light"
+      }
+      setTheme(newtheme);
+      toast({
+        variant: "default",
+        title: "Theme Changed!",
+        description: `Appliction theme has been changed: ${newtheme.charAt(0).toUpperCase() + newtheme.slice(1)}`,
+        duration: 2500,
+      })
     },
     {
       enableOnFormTags: ["input", "select", "textarea"],
@@ -132,7 +162,7 @@ function LoginPage() {
     setLoading(false);
   }
   return (
-    <div className="flex flex-col min-h-dvh justify-center items-center">
+    <div className="relative flex flex-col min-h-dvh justify-center items-center">
       <Card className="min-w-80 shadow-md">
         <CardHeader>
           <div className="flex justify-between align-middle">
@@ -190,15 +220,29 @@ function LoginPage() {
                 shortcut="⌥ P"
               />
             </div>
+            <Separator></Separator>
             <Button
               tabIndex={2}
               type="submit"
-              className="mt-6"
+              className="flex-grow"
               disabled={loading}
               ref={loginButtonRef}
             >
-              <ShortcutKey text="Login" shortcut="⌥ L"></ShortcutKey>
+              <ShortcutKey
+                text="Login"
+                shortcut="⌥ L"
+                invert={true}
+              ></ShortcutKey>
             </Button>
+
+            <div className="absolute top-0 right-0 m-8  flex items-center">
+              <div className="mx-3 flex items-center">
+                <ShortcutKey shortcut="⌥ T" text="" />
+                <div className="flex font-medium text-sm">Theme</div>
+              </div>
+
+              <ModeToggle />
+            </div>
           </form>
         </CardContent>
       </Card>
